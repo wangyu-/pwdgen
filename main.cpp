@@ -13,17 +13,17 @@ using namespace std;
 const int it_count=1000*100;
 const int inner_output_len=32*255; // this is limited by sha256 and hdkf
 
-char inner_output_buf[inner_output_len];
+char inner_output_buf[inner_output_len+100];
 
 bool char_table[256+100]={0};
 
 char user_passwd[1000]="secret_password";
 char hkdf_info[1000]="info_for_password_derive";
 
-//char custom_str[]="1234567890abcdefghijklmnopqrstuvwxyz";
-char custom_str[]="23456789abcdefghijkmnpqrstuvwxyz"; // without 0 o 1 l
+//char custom_str[1000]="1234567890abcdefghijklmnopqrstuvwxyz";
+char custom_str[1000]="23456789abcdefghijkmnpqrstuvwxyz"; // without 0 o 1 l
 
-int output_len=10;
+int output_len=15;
 
 int init_table()
 {
@@ -37,21 +37,21 @@ int init_table()
 }
 int main(int argc, char *argv[])
 {
-	if(argc!=4&&argc!=5)
+	if(argc!=3&&argc!=4&&argc!=5)
 	{
 		printf("usage:\n");
+		printf(" ./this_program pwd info\n");
 		printf(" ./this_program pwd info len\n");
 		printf(" ./this_program pwd info len custom_char_list\n");
 		exit(-1);
 	}
 
-	if(argc==5)
-	{
-		sscanf(argv[4],"%s",custom_str);
-	}
 	sscanf(argv[1],"%s",user_passwd);
 	sscanf(argv[2],"%s",hkdf_info);
-	sscanf(argv[3],"%d",&output_len);
+	if(argc>=4)
+		sscanf(argv[3],"%d",&output_len);
+	if(argc>=5)
+		sscanf(argv[4],"%s",custom_str);
 
 	printf("pwd=[%s]\n",user_passwd);
 	printf("---------\n");
