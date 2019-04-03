@@ -24,6 +24,10 @@ mingw:git_version
 	rm -f ${NAME}
 	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS}  -ggdb -static -O3
 
+mac:git_version
+	rm -f ${NAME}
+	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS}  -ggdb -O3
+
 fast: git_version
 	rm -f ${NAME}
 	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS} -lrt -ggdb
