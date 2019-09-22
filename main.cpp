@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include "log.h"
-#include <string>
-using namespace std;
+//#include <string>
+//using namespace std;
 
 const int it_count=1000*100;
 const int inner_output_len=32*255; // this is limited by sha256 and hdkf
@@ -35,6 +35,7 @@ int init_table()
 	}
 	return 0;
 }
+char output[1024];
 int main(int argc, char *argv[])
 {
 	if(argc!=3&&argc!=4&&argc!=5)
@@ -71,8 +72,9 @@ int main(int argc, char *argv[])
 
 	init_table();
 
-	string output="";
-
+	
+	//string output="";
+	int idx=0;
 
 	printf("---------\n");
 
@@ -80,9 +82,10 @@ int main(int argc, char *argv[])
 	{
 		unsigned char c=inner_output_buf[i];
 		//if(char_table[c]) printf("%c",char(c));
-		if(char_table[c]) output+=char(c);
+		if(char_table[c]) output[idx++]=char(c);
+		if(idx>=1000) break;
 	}
-	assert(int(output.length())>=output_len);
+	assert(int(idx)>=output_len);
 
 	for(int i=0;i<output_len;i++)
 	{

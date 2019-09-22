@@ -1,5 +1,5 @@
 cc_cross=/home/wangyu/Desktop/arm-2014.05/bin/arm-none-linux-gnueabi-g++
-cc_local=g++
+cc_local=clang++ -arch arm64 -isysroot /var/root/iPhoneOS11.1.sdk 
 #cc_local=/opt/cross/x86_64-linux-musl/bin/x86_64-linux-musl-g++
 #cc_mips34kc=/toolchains/OpenWrt-SDK-ar71xx-for-linux-x86_64-gcc-4.8-linaro_uClibc-0.9.33.2/staging_dir/toolchain-mips_34kc_gcc-4.8-linaro_uClibc-0.9.33.2/bin/mips-openwrt-linux-g++
 cc_mips24kc_be=/toolchains/lede-sdk-17.01.2-ar71xx-generic_gcc-5.4.0_musl-1.1.16.Linux-x86_64/staging_dir/toolchain-mips_24kc_gcc-5.4.0_musl-1.1.16/bin/mips-openwrt-linux-musl-g++
@@ -18,7 +18,7 @@ TAR=${NAME}_binaries.tar.gz `echo ${TARGETS}|sed -r 's/([^ ]+)/pwdgen_\1/g'` ver
 
 all:git_version
 	rm -f ${NAME}
-	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS} -lrt -ggdb -static -O3
+	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS}  -ggdb -O3
 
 mingw:git_version
 	rm -f ${NAME}
