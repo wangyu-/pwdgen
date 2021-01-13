@@ -8,9 +8,10 @@
 #include <assert.h>
 #include "log.h"
 #include <string>
+#include <stdarg.h>
 using namespace std;
 
-const int it_count=1000*100;
+const int it_count=100*1000;
 const int inner_output_len=32*255; // this is limited by sha256 and hdkf
 
 char inner_output_buf[inner_output_len+100];
@@ -27,6 +28,7 @@ int output_len=15;
 
 int init_table()
 {
+	memset(char_table,0,sizeof(char_table));
 	int custom_len=strlen(custom_str);
 	for(int i=0;i<custom_len;i++)
 	{
@@ -35,28 +37,43 @@ int init_table()
 	}
 	return 0;
 }
-int main(int argc, char *argv[])
+
+string myprint_output;
+void myprintf(const char* str, ...)
 {
-	if(argc!=3&&argc!=4&&argc!=5)
+	char tmp[1000];
+	tmp[0]=0;
+	va_list vlist;
+	va_start(vlist, str);
+	vsprintf(tmp, str, vlist);
+	va_end(vlist);
+	myprint_output+=tmp;
+
+}
+extern "C" {
+char * pwdgen(char * in_pwd,char * in_info, char * in_len, char * in_char_list)
+{
+	myprint_output.clear();
+	if(strlen(in_pwd)==0||strlen(in_info)==0)
 	{
-		printf("usage:\n");
-		printf(" ./this_program pwd info\n");
-		printf(" ./this_program pwd info len\n");
-		printf(" ./this_program pwd info len custom_char_list\n");
-		exit(-1);
+		myprintf("usage:\n");
+		myprintf(" ./this_program pwd info\n");
+		myprintf(" ./this_program pwd info len\n");
+		myprintf(" ./this_program pwd info len char_list\n");
+		return (char *)myprint_output.c_str();
 	}
+	sscanf(in_pwd,"%s",user_passwd);
+	sscanf(in_info,"%s",hkdf_info);
 
-	sscanf(argv[1],"%s",user_passwd);
-	sscanf(argv[2],"%s",hkdf_info);
-	if(argc>=4)
-		sscanf(argv[3],"%d",&output_len);
-	if(argc>=5)
-		sscanf(argv[4],"%s",custom_str);
+	if(strlen(in_len)!=0)
+		sscanf(in_len,"%d",&output_len);
+	if(strlen(in_char_list)!=0)
+		sscanf(in_char_list,"%s",custom_str);
 
-	printf("pwd=[%s]\n",user_passwd);
-	printf("---------\n");
+	myprintf("pwd=[%s]\n",user_passwd);
+	myprintf("---------\n");
 
-	printf("info=[%s] len=[%d] str=[%s]\n",hkdf_info,output_len,custom_str);
+	myprintf("info=[%s] len=[%d] str=[%s]\n",hkdf_info,output_len,custom_str);
 
 	int user_passwd_len=strlen(user_passwd);
 
@@ -74,7 +91,7 @@ int main(int argc, char *argv[])
 	string output="";
 
 
-	printf("---------\n");
+	myprintf("---------\n");
 
 	for(int i=0;i<inner_output_len;i++)
 	{
@@ -86,17 +103,37 @@ int main(int argc, char *argv[])
 
 	for(int i=0;i<output_len;i++)
 	{
-		printf("%c",output[i]);
+		myprintf("%c",output[i]);
 	}
-	printf("\n");
+	myprintf("\n");
 
-	printf("---------\n");
+	myprintf("---------\n");
 
 	for(int i=0;i<output_len;i++)
 	{
-		if(i!=0&&i%5==0) printf(" ");
-		printf("%c",output[i]);
+		if(i!=0&&i%5==0) myprintf(" ");
+		myprintf("%c",output[i]);
 	}
-	printf("\n");
+	myprintf("\n");
+	return (char *)myprint_output.c_str();
+
+}
+}
+int main(int argc, char *argv[])
+{
+	if(argc!=3&&argc!=4&&argc!=5)
+	{
+		exit(-1);
+	}
+	char * res;
+	char empty[5]={0};
+	if(argc==3)
+		res=pwdgen(argv[1],argv[2],empty,empty);
+	if(argc==4)
+		res=pwdgen(argv[1],argv[2],argv[3],empty);
+	if(argc==5)
+		res=pwdgen(argv[1],argv[2],argv[3],argv[4]);
+
+	printf("%s",res);
 	return 0;
 }
