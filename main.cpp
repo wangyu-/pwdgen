@@ -14,32 +14,8 @@ using namespace std;
 const int it_count=100*1000;
 const int inner_output_len=32*255; // this is limited by sha256 and hdkf
 
-char inner_output_buf[inner_output_len+100];
 
-bool char_table[256+100]={0};
-
-char user_passwd[1000]="secret_password";
-char hkdf_info[1000]="info_for_password_derive";
-
-//char custom_str[1000]="1234567890abcdefghijklmnopqrstuvwxyz";
-char custom_str[1000]="23456789abcdefghijkmnpqrstuvwxyz"; // without 0 o 1 l
-
-int output_len=15;
-
-int init_table()
-{
-	memset(char_table,0,sizeof(char_table));
-	int custom_len=strlen(custom_str);
-	for(int i=0;i<custom_len;i++)
-	{
-		unsigned char c= custom_str[i];
-		char_table[c]=1;
-	}
-	return 0;
-}
-
-string myprint_output;
-void myprintf(const char* str, ...)
+void myprintf(string &out, const char* str, ...)
 {
 	char tmp[1000];
 	tmp[0]=0;
@@ -47,20 +23,35 @@ void myprintf(const char* str, ...)
 	va_start(vlist, str);
 	vsprintf(tmp, str, vlist);
 	va_end(vlist);
-	myprint_output+=tmp;
+	out+=tmp;
 
 }
+
 extern "C" {
 char * pwdgen(char * in_pwd,char * in_info, char * in_len, char * in_char_list)
 {
-	myprint_output.clear();
+	string *myprint_buf=new string();
+	string &out=*myprint_buf;
+
+	char inner_output_buf[inner_output_len+100];
+
+	bool char_table[256+100]={0};
+
+	char user_passwd[1000]="secret_password";
+	char hkdf_info[1000]="info_for_password_derive";
+
+	//char custom_str[1000]="1234567890abcdefghijklmnopqrstuvwxyz";
+	char custom_str[1000]="23456789abcdefghijkmnpqrstuvwxyz"; // without 0 o 1 l
+
+	int output_len=15;
+
 	if(strlen(in_pwd)==0||strlen(in_info)==0)
 	{
-		myprintf("usage:\n");
-		myprintf(" ./this_program pwd info\n");
-		myprintf(" ./this_program pwd info len\n");
-		myprintf(" ./this_program pwd info len char_list\n");
-		return (char *)myprint_output.c_str();
+		myprintf(out,"usage:\n");
+		myprintf(out," ./this_program pwd info\n");
+		myprintf(out," ./this_program pwd info len\n");
+		myprintf(out," ./this_program pwd info len char_list\n");
+		return (char *)out.c_str();
 	}
 	sscanf(in_pwd,"%s",user_passwd);
 	sscanf(in_info,"%s",hkdf_info);
@@ -70,10 +61,10 @@ char * pwdgen(char * in_pwd,char * in_info, char * in_len, char * in_char_list)
 	if(strlen(in_char_list)!=0)
 		sscanf(in_char_list,"%s",custom_str);
 
-	myprintf("pwd=[%s]\n",user_passwd);
-	myprintf("---------\n");
+	myprintf(out,"pwd=[%s]\n",user_passwd);
+	myprintf(out,"---------\n");
 
-	myprintf("info=[%s] len=[%d] str=[%s]\n",hkdf_info,output_len,custom_str);
+	myprintf(out,"info=[%s] len=[%d] str=[%s]\n",hkdf_info,output_len,custom_str);
 
 	int user_passwd_len=strlen(user_passwd);
 
@@ -86,12 +77,21 @@ char * pwdgen(char * in_pwd,char * in_info, char * in_len, char * in_char_list)
 
 	assert( hkdf_sha256_expand( pbkdf2_output1,32, (unsigned char *)hkdf_info,strlen(hkdf_info), (unsigned char *)inner_output_buf, inner_output_len )  ==0);
 
-	init_table();
+	if(1) // init_table
+	{
+		memset(char_table,0,sizeof(char_table));
+		int custom_len=strlen(custom_str);
+		for(int i=0;i<custom_len;i++)
+		{
+			unsigned char c= custom_str[i];
+			char_table[c]=1;
+		}
+	}
 
 	string output="";
 
 
-	myprintf("---------\n");
+	myprintf(out,"---------\n");
 
 	for(int i=0;i<inner_output_len;i++)
 	{
@@ -99,23 +99,29 @@ char * pwdgen(char * in_pwd,char * in_info, char * in_len, char * in_char_list)
 		//if(char_table[c]) printf("%c",char(c));
 		if(char_table[c]) output+=char(c);
 	}
-	assert(int(output.length())>=output_len);
+
+	if(int(output.length())<output_len)
+	{
+		myprintf(out,"!!! OOPS, not able to generate %d characters as requested, only %d were generated\n",output_len,output.length());
+		myprintf(out,"---------\n");
+		output_len=output.length();
+	}
 
 	for(int i=0;i<output_len;i++)
 	{
-		myprintf("%c",output[i]);
+		myprintf(out,"%c",output[i]);
 	}
-	myprintf("\n");
+	myprintf(out,"\n");
 
-	myprintf("---------\n");
+	myprintf(out,"---------\n");
 
 	for(int i=0;i<output_len;i++)
 	{
-		if(i!=0&&i%5==0) myprintf(" ");
-		myprintf("%c",output[i]);
+		if(i!=0&&i%5==0) myprintf(out," ");
+		myprintf(out,"%c",output[i]);
 	}
-	myprintf("\n");
-	return (char *)myprint_output.c_str();
+	myprintf(out,"\n");
+	return (char *)out.c_str();
 
 }
 }
