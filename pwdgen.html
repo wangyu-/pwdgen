@@ -4,18 +4,14 @@
 <h1>pwdgen</h1>
 <script type="text/javascript" src="pwdgen.js"></script>
 <script>
-var running=0;
 function myfunc()
 {
-if(running==1) return;
-running=1;
 pwdgen = Module.cwrap('pwdgen', 'string', ['string','string','string','string']);
 var v1=document.getElementById('box1').value
 var v2=document.getElementById('box2').value
 var v3=document.getElementById('box3').value
 var v4=document.getElementById('box4').value
 alert(pwdgen(v1,v2,v3,v4));
-running=0;
 }
 </script>
 

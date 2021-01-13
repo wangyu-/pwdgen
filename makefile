@@ -18,7 +18,7 @@ TAR=${NAME}_binaries.tar.gz `echo ${TARGETS}|sed -r 's/([^ ]+)/pwdgen_\1/g'` ver
 
 all:git_version
 	rm -f ${NAME}
-	${cc_local}   -o ${NAME}          -I. ${SOURCES} ${FLAGS} -lrt -ggdb -static -O3
+	emcc   -o ${NAME}          -I. ${SOURCES} ${FLAGS} -O2 -s EXPORTED_FUNCTIONS="['_pwdgen']" -s 'EXTRA_EXPORTED_RUNTIME_METHODS=["cwrap"]' -o pwdgen.js
 
 mingw:git_version
 	rm -f ${NAME}
