@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<body>
+<h1>pwdgen</h1>
+<script type="text/javascript" src="pwdgen.js"></script>
+<script>
+function myfunc()
+{
+pwdgen = Module.cwrap('pwdgen', 'string', ['string','string','string','string']);
+var v1=document.getElementById('box1').value
+var v2=document.getElementById('box2').value
+var v3=document.getElementById('box3').value
+var v4=document.getElementById('box4').value
+alert(pwdgen(v1,v2,v3,v4));
+}
+function add(x)
+{
+	var id='box1';
+	document.getElementById(id).value+=x;
+}
+
+</script>
+
+<input id="box1" placeholder="pwd" type="text" /> <br>
+<input id="box2" placeholder="info" type="text" /> <br>
+<input id="box3" placeholder="len" type="text" /> <br>
+<input id="box4" placeholder="char_list" type="text" /> <br>
+<button onclick="myfunc()">Click me</button> <br> <br>
+
+<button onclick="add('1')">1</button>
+<button onclick="add('2')">2</button>
+<button onclick="add('3')">3</button>
+<button onclick="add('4')">4</button>
+<button onclick="add('5')">5</button>
+<button onclick="add('6')">6</button>
+<button onclick="add('7')">7</button>
+<button onclick="add('8')">8</button>
+<button onclick="add('9')">9</button>
+<button onclick="add('0')">0</button> <br>
+
+<button onclick="add('q')">q</button>
+<button onclick="add('w')">w</button>
+<button onclick="add('e')">e</button>
+<button onclick="add('r')">r</button>
+<button onclick="add('t')">t</button>
+<button onclick="add('y')">y</button>
+<button onclick="add('u')">u</button>
+<button onclick="add('i')">i</button>
+<button onclick="add('o')">o</button>
+<button onclick="add('p')">p</button> <br>
+
+<button onclick="add('a')">a</button>
+<button onclick="add('s')">s</button>
+<button onclick="add('d')">d</button>
+<button onclick="add('f')">f</button>
+<button onclick="add('g')">g</button>
+<button onclick="add('h')">h</button>
+<button onclick="add('j')">j</button>
+<button onclick="add('k')">k</button>
+<button onclick="add('l')">l</button> <br>
+
+<button onclick="add('z')">z</button>
+<button onclick="add('x')">x</button>
+<button onclick="add('c')">c</button>
+<button onclick="add('v')">v</button>
+<button onclick="add('b')">b</button>
+<button onclick="add('n')">n</button>
+<button onclick="add('m')">m</button> <br>
+
+</body>

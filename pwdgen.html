@@ -7,18 +7,18 @@
 function myfunc()
 {
 pwdgen = Module.cwrap('pwdgen', 'string', ['string','string','string','string']);
-var v1=document.getElementById('box1').value
-var v2=document.getElementById('box2').value
-var v3=document.getElementById('box3').value
-var v4=document.getElementById('box4').value
+var v1=document.getElementById('box1').value;
+var v2=document.getElementById('box2').value;
+var v3=document.getElementById('box3').value;
+var v4=document.getElementById('box4').value;
 alert(pwdgen(v1,v2,v3,v4));
 }
 </script>
 
-<input id="box1" placeholder="pwd" type="text" /> <br>
-<input id="box2" placeholder="info" type="text" /> <br>
-<input id="box3" placeholder="len" type="text" /> <br>
-<input id="box4" placeholder="char_list" type="text" /> <br>
+<input id="box1" placeholder="pwd" type="password" size="25" /> <br>
+<input id="box2" placeholder="info" type="text" size="25" /> <br>
+<input id="box3" placeholder="len" type="text" size="25" /> <br>
+<input id="box4" placeholder="char_list" type="text" size="25" /> <br>
 <button onclick="myfunc()">Click me</button>
 
 </body>
